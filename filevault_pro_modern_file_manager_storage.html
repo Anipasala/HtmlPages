@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileVault Pro - Storage & Directory</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0f172a',
+                        cardbg: '#1e293b',
+                        bordercolor: '#334155'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-[#0b0f19] text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-40 backdrop-blur-md bg-white/80 dark:bg-[#0b0f19]/80 border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/30 text-white font-bold text-xl">
+                    <i data-lucide="folder-kanban" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent">FileVault Pro</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Secure Cloud & Directory Storage</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <button onclick="openModal('uploadModal')" class="inline-flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-medium text-sm transition shadow-lg shadow-indigo-600/20">
+                    <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                    <span>Upload File</span>
+                </button>
+                <button onclick="toggleTheme()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-300" aria-label="Toggle Theme">
+                    <i data-lucide="sun" id="themeIconSun" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="moon" id="themeIconMoon" class="w-5 h-5 block dark:hidden"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- Dashboard Stats Grid -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <!-- Stat 1 -->
+            <div class="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 p-5 rounded-2xl shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Files</p>
+                    <h3 id="statTotalFiles" class="text-2xl font-bold mt-1 text-slate-900 dark:text-white">0</h3>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                    <i data-lucide="file-text" class="w-6 h-6"></i>
+                </div>
+            </div>
+            <!-- Stat 2 -->
+            <div class="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 p-5 rounded-2xl shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Storage Used</p>
+                    <h3 id="statStorageUsed" class="text-2xl font-bold mt-1 text-slate-900 dark:text-white">0 MB</h3>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <i data-lucide="hard-drive" class="w-6 h-6"></i>
+                </div>
+            </div>
+            <!-- Stat 3 -->
+            <div class="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 p-5 rounded-2xl shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Categories</p>
+                    <h3 id="statCategories" class="text-2xl font-bold mt-1 text-slate-900 dark:text-white">4 Types</h3>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 flex items-center justify-center">
+                    <i data-lucide="layers" class="w-6 h-6"></i>
+                </div>
+            </div>
+            <!-- Stat 4 -->
+            <div class="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 p-5 rounded-2xl shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Directory Index</p>
+                    <h3 id="statIndexStatus" class="text-2xl font-bold mt-1 text-slate-900 dark:text-white">All Active</h3>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                    <i data-lucide="list-filter" class="w-6 h-6"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Drag & Drop Upload Simulation Banner -->
+        <section class="bg-white dark:bg-slate-900/60 border-2 border-dashed border-slate-300 dark:border-slate-800 rounded-3xl p-8 text-center transition hover:border-indigo-500/50 relative group cursor-pointer" onclick="openModal('uploadModal')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+            <div class="max-w-md mx-auto space-y-3 pointer-events-none">
+                <div class="w-16 h-16 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-2xl mx-auto flex items-center justify-center group-hover:scale-110 transition duration-300">
+                    <i data-lucide="cloud-upload" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Drag & drop files here, or <span class="text-indigo-600 dark:text-indigo-400 underline">browse</span></h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Supports PDF, Images, Code, Documents, Archives up to 50MB with instant categorization.</p>
+            </div>
+        </section>
+
+        <!-- Alphabetical Directory Index (A-Z Filter) -->
+        <section class="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 p-4 rounded-2xl shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center space-x-1.5">
+                    <i data-lucide="sort-asc" class="w-4 h-4"></i>
+                    <span>Alphabetical Directory Index (A-Z)</span>
+                </h4>
+                <button onclick="filterByLetter('ALL')" id="btnAllLetter" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">Reset Filter</button>
+            </div>
+            <div id="alphabetIndex" class="flex flex-wrap gap-1.5 justify-between sm:justify-start">
+                <!-- Dynamically generated A-Z buttons -->
+            </div>
+        </section>
+
+        <!-- Main File Explorer Controls & Listing -->
+        <section class="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 rounded-2xl shadow-sm overflow-hidden">
+            <!-- Toolbar -->
+            <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="relative w-full sm:w-80">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+                    <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search files by name..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-indigo-500 text-slate-800 dark:text-slate-100 placeholder-slate-400">
+                </div>
+
+                <div class="flex items-center space-x-3 w-full sm:w-auto justify-end">
+                    <select id="categoryFilter" onchange="handleCategoryFilter()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 text-slate-800 dark:text-slate-200">
+                        <option value="ALL">All Categories</option>
+                        <option value="Documents">Documents</option>
+                        <option value="Images">Images</option>
+                        <option value="Code">Code / Text</option>
+                        <option value="Archives">Archives / Other</option>
+                    </select>
+
+                    <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <button onclick="setViewMode('grid')" id="gridBtn" class="p-1.5 rounded-lg text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 shadow-sm transition" title="Grid View">
+                            <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="setViewMode('list')" id="listBtn" class="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition" title="List View">
+                            <i data-lucide="list" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File List Container -->
+            <div id="fileContainer" class="p-5">
+                <!-- Dynamically populated files -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
+        <p>FileVault Pro Cloud Storage &bull; Secured with LocalStorage Persistence &bull; Built with Tailwind CSS & Lucide Icons</p>
+    </footer>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden transform transition-all">
+            <div class="px-6 py-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                    <i data-lucide="upload" class="w-5 h-5 text-indigo-600"></i>
+                    <span>Upload New File</span>
+                </h3>
+                <button onclick="closeModal('uploadModal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Select File from Device</label>
+                    <input type="file" id="fileInput" class="w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-500/10 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100 transition cursor-pointer">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Or Simulate File Entry</label>
+                    <input type="text" id="simFileName" placeholder="e.g. project_proposal.pdf" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 text-slate-800 dark:text-slate-100 placeholder-slate-400">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Category</label>
+                        <select id="simCategory" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-indigo-500 text-slate-800 dark:text-slate-200">
+                            <option value="Documents">Documents</option>
+                            <option value="Images">Images</option>
+                            <option value="Code">Code / Text</option>
+                            <option value="Archives">Archives / Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Size (e.g. 2.4 MB)</label>
+                        <input type="text" id="simFileSize" placeholder="2.4 MB" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 text-slate-800 dark:text-slate-100 placeholder-slate-400">
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-800 flex justify-end space-x-3">
+                <button onclick="closeModal('uploadModal')" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition">Cancel</button>
+                <button onclick="processUpload()" class="px-5 py-2 rounded-xl text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white transition shadow-lg shadow-indigo-600/20">Upload & Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="previewModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <h3 id="previewTitle" class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                    <i data-lucide="eye" class="w-5 h-5 text-indigo-600"></i>
+                    <span id="previewFileName">File Preview</span>
+                </h3>
+                <button onclick="closeModal('previewModal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div id="previewContent" class="p-6 max-h-[60vh] overflow-y-auto bg-slate-50 dark:bg-slate-950 font-mono text-sm text-slate-700 dark:text-slate-300">
+                <!-- Preview content rendered here -->
+            </div>
+            <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-800 flex justify-end space-x-3">
+                <button onclick="closeModal('previewModal')" class="px-4 py-2 rounded-xl text-sm font-medium bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition text-slate-800 dark:text-slate-200">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Notification Box -->
+    <div id="notification" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-3 rounded-2xl shadow-xl flex items-center space-x-3 text-sm font-medium">
+        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400 dark:text-emerald-600"></i>
+        <span id="notificationText">Action successful!</span>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Initial Default Files Dataset if LocalStorage is empty
+        const defaultFiles = [
+            { id: '1', name: 'Annual_Report_2026.pdf', category: 'Documents', size: '4.2 MB', date: 'Oct 14, 2026', content: 'CONFIDENTIAL: Annual company financial and operational review for fiscal year 2026.' },
+            { id: '2', name: 'Brand_Guidelines.png', category: 'Images', size: '2.8 MB', date: 'Oct 12, 2026', content: '[Image Binary Stream Simulation: Color Palette, Typography Hierarchy, Logo Usage]' },
+            { id: '3', name: 'Database_Schema.sql', category: 'Code', size: '156 KB', date: 'Oct 10, 2026', content: 'CREATE TABLE users (id SERIAL PRIMARY KEY, username VARCHAR(50), email VARCHAR(100));\nCREATE TABLE files (id UUID PRIMARY KEY, filename VARCHAR(255), owner_id UUID);' },
+            { id: '4', name: 'Client_Contracts.zip', category: 'Archives', size: '14.5 MB', date: 'Oct 05, 2026', content: '[Archive package containing signed PDF agreements, SLAs, and NDA certificates]' },
+            { id: '5', name: 'App_Architecture.md', category: 'Documents', size: '45 KB', date: 'Oct 01, 2026', content: '# Architecture Overview\n- Frontend: Tailwind CSS & Vanilla JS\n- Storage: LocalStorage persistence\n- UI: Lucide Icons & Responsive Design' },
+            { id: '6', name: 'Dashboard_Mockup.png', category: 'Images', size: '1.9 MB', date: 'Sep 28, 2026', content: '[UI Design Mockup: Dark mode dashboard interface with file statistics]' }
+        ];
+
+        let files = JSON.parse(localStorage.getItem('filevault_files')) || defaultFiles;
+        let viewMode = 'grid';
+        let currentLetterFilter = 'ALL';
+        let currentCategoryFilter = 'ALL';
+        let currentSearchQuery = '';
+
+        // Initialize App on DOM Load
+        window.addEventListener('DOMContentLoaded', () => {
+            initAlphabetIndex();
+            renderFiles();
+            updateStats();
+            lucide.createIcons();
+        });
+
+        // Save to LocalStorage
+        function saveFiles() {
+            localStorage.setItem('filevault_files', JSON.stringify(files));
+            updateStats();
+        }
+
+        // Render A-Z Index Bar
+        function initAlphabetIndex() {
+            const container = document.getElementById('alphabetIndex');
+            let html = `<button onclick="filterByLetter('ALL')" class="letter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow-sm" data-letter="ALL">ALL</button>`;
+            
+            for (let i = 65; i <= 90; i++) {
+                const char = String.fromCharCode(i);
+                html += `<button onclick="filterByLetter('${char}')" class="letter-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold transition bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300" data-letter="${char}">${char}</button>`;
+            }
+            container.innerHTML = html;
+        }
+
+        // Filter by Alphabet Letter
+        function filterByLetter(letter) {
+            currentLetterFilter = letter;
+            
+            // Update UI active state on buttons
+            document.querySelectorAll('.letter-btn').forEach(btn => {
+                if (btn.getAttribute('data-letter') === letter) {
+                    btn.className = 'letter-btn px-2.5 py-1.5 sm:px-3 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow-sm';
+                } else {
+                    btn.className = 'letter-btn px-2.5 py-1.5 sm:px-3 rounded-xl text-xs font-semibold transition bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300';
+                }
+            });
+
+            document.getElementById('statIndexStatus').innerText = letter === 'ALL' ? 'All Active' : `Index: ${letter}`;
+            renderFiles();
+        }
+
+        // Handle Search Input
+        function handleSearch() {
+            currentSearchQuery = document.getElementById('searchInput').value.toLowerCase();
+            renderFiles();
+        }
+
+        // Handle Category Dropdown Filter
+        function handleCategoryFilter() {
+            currentCategoryFilter = document.getElementById('categoryFilter').value;
+            renderFiles();
+        }
+
+        // Toggle Grid/List View
+        function setViewMode(mode) {
+            viewMode = mode;
+            const gridBtn = document.getElementById('gridBtn');
+            const listBtn = document.getElementById('listBtn');
+
+            if (mode === 'grid') {
+                gridBtn.className = 'p-1.5 rounded-lg text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 shadow-sm transition';
+                listBtn.className = 'p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition';
+            } else {
+                listBtn.className = 'p-1.5 rounded-lg text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 shadow-sm transition';
+                gridBtn.className = 'p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition';
+            }
+            renderFiles();
+        }
+
+        // Filter and Render Files
+        function renderFiles() {
+            const container = document.getElementById('fileContainer');
+
+            // Apply filters
+            let filtered = files.filter(file => {
+                const matchesSearch = file.name.toLowerCase().includes(currentSearchQuery);
+                const matchesCategory = currentCategoryFilter === 'ALL' || file.category === currentCategoryFilter;
+                const matchesLetter = currentLetterFilter === 'ALL' || file.name.toUpperCase().startsWith(currentLetterFilter);
+                return matchesSearch && matchesCategory && matchesLetter;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 space-y-3">
+                        <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 text-slate-400 rounded-full flex items-center justify-center mx-auto">
+                            <i data-lucide="folder-search" class="w-8 h-8"></i>
+                        </div>
+                        <h4 class="text-base font-bold text-slate-700 dark:text-slate-300">No files found</h4>
+                        <p class="text-xs text-slate-500">Try adjusting your alphabetical index or search criteria.</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            if (viewMode === 'grid') {
+                let html = '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">';
+                filtered.forEach(file => {
+                    html += `
+                        <div class="bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 rounded-2xl p-5 hover:border-indigo-500/50 transition flex flex-col justify-between space-y-4 group">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-xl ${getCategoryBg(file.category)} flex items-center justify-center font-bold">
+                                        <i data-lucide="${getFileIcon(file.category)}" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-sm font-bold text-slate-900 dark:text-white truncate max-w-[180px]" title="${file.name}">${file.name}</h5>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400">${file.size} &bull; ${file.date}</p>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">${file.category}</span>
+                            </div>
+
+                            <div class="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100 dark:border-slate-700/50">
+                                <button onclick="previewFile('${file.id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-700/60 hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-indigo-500/20 dark:hover:text-indigo-400 transition text-slate-600 dark:text-slate-300 text-xs flex items-center space-x-1" title="Preview">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="downloadFile('${file.id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-700/60 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-500/20 dark:hover:text-emerald-400 transition text-slate-600 dark:text-slate-300 text-xs flex items-center space-x-1" title="Download">
+                                    <i data-lucide="download" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="deleteFile('${file.id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-700/60 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/20 dark:hover:text-rose-400 transition text-slate-600 dark:text-slate-300 text-xs flex items-center space-x-1" title="Delete">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            } else {
+                let html = '<div class="overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="border-b border-slate-200 dark:border-slate-800 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"><th class="py-3 px-4">File Name</th><th class="py-3 px-4">Category</th><th class="py-3 px-4">Size</th><th class="py-3 px-4">Upload Date</th><th class="py-3 px-4 text-right">Actions</th></tr></thead><tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 text-sm">';
+                filtered.forEach(file => {
+                    html += `
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition">
+                            <td class="py-3 px-4 flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-lg ${getCategoryBg(file.category)} flex items-center justify-center">
+                                    <i data-lucide="${getFileIcon(file.category)}" class="w-4 h-4"></i>
+                                </div>
+                                <span class="font-semibold text-slate-900 dark:text-white">${file.name}</span>
+                            </td>
+                            <td class="py-3 px-4"><span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">${file.category}</span></td>
+                            <td class="py-3 px-4 text-slate-500 dark:text-slate-400">${file.size}</td>
+                            <td class="py-3 px-4 text-slate-500 dark:text-slate-400">${file.date}</td>
+                            <td class="py-3 px-4 text-right space-x-1">
+                                <button onclick="previewFile('${file.id}')" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700/60 hover:text-indigo-600 transition text-slate-600 dark:text-slate-300 inline-block"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                <button onclick="downloadFile('${file.id}')" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700/60 hover:text-emerald-600 transition text-slate-600 dark:text-slate-300 inline-block"><i data-lucide="download" class="w-4 h-4"></i></button>
+                                <button onclick="deleteFile('${file.id}')" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700/60 hover:text-rose-600 transition text-slate-600 dark:text-slate-300 inline-block"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                html += '</tbody></table></div>';
+                container.innerHTML = html;
+            }
+
+            lucide.createIcons();
+        }
+
+        // Helper for Category Icon
+        function getFileIcon(category) {
+            switch(category) {
+                case 'Documents': return 'file-text';
+                case 'Images': return 'image';
+                case 'Code': return 'code';
+                default: return 'file-archive';
+            }
+        }
+
+        // Helper for Category Badge Color
+        function getCategoryBg(category) {
+            switch(category) {
+                case 'Documents': return 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400';
+                case 'Images': return 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400';
+                case 'Code': return 'bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400';
+                default: return 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400';
+            }
+        }
+
+        // Update Dashboard Stats
+        function updateStats() {
+            document.getElementById('statTotalFiles').innerText = files.length;
+            
+            // Calculate Storage Used approximate
+            let totalMB = files.reduce((acc, file) => {
+                let sizeStr = file.size.toLowerCase();
+                let val = parseFloat(sizeStr);
+                if (sizeStr.includes('kb')) val = val / 1024;
+                return acc + val;
+            }, 0);
+            document.getElementById('statStorageUsed').innerText = totalMB > 1024 ? (totalMB / 1024).toFixed(2) + ' GB' : totalMB.toFixed(1) + ' MB';
+            document.getElementById('statCategories').innerText = '4 Types';
+        }
+
+        // Modal Controls
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+            document.getElementById(modalId).classList.add('flex');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('flex');
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // Process File Upload
+        function processUpload() {
+            const fileInput = document.getElementById('fileInput');
+            let name = document.getElementById('simFileName').value.trim();
+            let category = document.getElementById('simCategory').value;
+            let size = document.getElementById('simFileSize').value.trim() || '1.2 MB';
+
+            if (fileInput.files.length > 0) {
+                const uploadedFile = fileInput.files[0];
+                name = uploadedFile.name;
+                size = (uploadedFile.size / (1024 * 1024)).toFixed(2) + ' MB';
+                if(uploadedFile.type.includes('image')) category = 'Images';
+                else if(uploadedFile.type.includes('pdf') || uploadedFile.type.includes('text')) category = 'Documents';
+            }
+
+            if (!name) {
+                showNotification('Please enter or select a valid file name.');
+                return;
+            }
+
+            const newFile = {
+                id: Date.now().toString(),
+                name: name,
+                category: category,
+                size: size,
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                content: `Simulated secure storage content for ${name}.\nUploaded via FileVault Pro Cloud Indexer.\nTimestamp: ${new Date().toISOString()}`
+            };
+
+            files.unshift(newFile);
+            saveFiles();
+            renderFiles();
+            closeModal('uploadModal');
+
+            // Reset inputs
+            document.getElementById('fileInput').value = '';
+            document.getElementById('simFileName').value = '';
+            document.getElementById('simFileSize').value = '';
+
+            showNotification(`Successfully uploaded "${name}"`);
+        }
+
+        // Preview File
+        function previewFile(id) {
+            const file = files.find(f => f.id === id);
+            if (!file) return;
+
+            document.getElementById('previewFileName').innerText = file.name;
+            document.getElementById('previewContent').innerText = file.content || 'No preview available for this file type.';
+            openModal('previewModal');
+        }
+
+        // Download File Simulation
+        function downloadFile(id) {
+            const file = files.find(f => f.id === id);
+            if (!file) return;
+
+            const element = document.createElement('a');
+            const blob = new Blob([file.content || 'File download simulation'], { type: 'text/plain;charset=utf-8' });
+            element.href = URL.createObjectURL(blob);
+            element.download = file.name;
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+
+            showNotification(`Downloading "${file.name}"...`);
+        }
+
+        // Delete File
+        function deleteFile(id) {
+            const file = files.find(f => f.id === id);
+            if (!file) return;
+
+            files = files.filter(f => f.id !== id);
+            saveFiles();
+            renderFiles();
+            showNotification(`Deleted "${file.name}"`);
+        }
+
+        // Drag & Drop Handlers
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.currentTarget.classList.add('border-indigo-500', 'bg-indigo-50/50', 'dark:bg-indigo-500/10');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.currentTarget.classList.remove('border-indigo-500', 'bg-indigo-50/50', 'dark:bg-indigo-500/10');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.currentTarget.classList.remove('border-indigo-500', 'bg-indigo-50/50', 'dark:bg-indigo-500/10');
+
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                const dropped = e.dataTransfer.files[0];
+                const newFile = {
+                    id: Date.now().toString(),
+                    name: dropped.name,
+                    category: dropped.type.includes('image') ? 'Images' : 'Documents',
+                    size: (dropped.size / (1024 * 1024)).toFixed(2) + ' MB',
+                    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                    content: `Dropped file content stream for ${dropped.name}`
+                };
+                files.unshift(newFile);
+                saveFiles();
+                renderFiles();
+                showNotification(`Successfully uploaded "${dropped.name}" via drag & drop`);
+            }
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('filevault_theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('filevault_theme', 'dark');
+            }
+        }
+
+        // Load Theme Preference
+        if (localStorage.getItem('filevault_theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        }
+
+        // Notification Helper
+        function showNotification(text) {
+            const notif = document.getElementById('notification');
+            document.getElementById('notificationText').innerText = text;
+            notif.classList.remove('translate-y-20', 'opacity-0');
+            notif.classList.add('translate-y-0', 'opacity-100');
+            
+            setTimeout(() => {
+                notif.classList.remove('translate-y-0', 'opacity-100');
+                notif.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
