@@ -9,6 +9,40 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
 
+<!-- Firebase SDKs for Secret Open Tracker -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA1tabQkpVkRywa8EDuZfUy_iCuSzVRa98",
+    authDomain: "testing-4203b.firebaseapp.com",
+    projectId: "testing-4203b",
+    storageBucket: "testing-4203b.firebasestorage.app",
+    messagingSenderId: "717235828442",
+    appId: "1:717235828442:web:0c6021007573d1211b57e3",
+    measurementId: "G-V03PJRTQRM"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  async function trackOpen() {
+    try {
+      const statsRef = doc(db, "analytics", "birthday_visits");
+      const docSnap = await getDoc(statsRef);
+      if (docSnap.exists()) {
+        await updateDoc(statsRef, { count: increment(1), lastOpened: new Date().toISOString() });
+      } else {
+        await setDoc(statsRef, { count: 1, lastOpened: new Date().toISOString() });
+      }
+    } catch (e) {
+      console.log("Tracker silent update");
+    }
+  }
+  trackOpen();
+</script>
+
 <style>
 :root {
   --pink:#f04f83;
@@ -179,7 +213,7 @@ h1 {
 
 p {
   margin-bottom:19px;
-  color:var(--muted);
+  color:#796d83;
   font-size:14px;
   line-height:1.85;
 }
@@ -246,8 +280,30 @@ p {
 .wide { width:100%; }
 #noBtn { position:relative; white-space:nowrap; }
 
-/* GIFT BOX / UNWRAPPER STYLE */
+/* POPUP BANNER STYLE */
+.lock-popup {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: linear-gradient(135deg, #392c46, #512d46);
+  color: white;
+  padding: 14px 22px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  z-index: 100;
+  font-size: 13px;
+  font-weight: 600;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.lock-popup.show {
+  transform: translateX(-50%) translateY(0);
+}
 
+/* GIFT BOX STYLE */
 .gift-box {
   min-height:220px;
   width:100%;
@@ -314,7 +370,6 @@ p {
 .box-sub { margin-top:11px; font-size:11px; color:#ffe1ed; }
 
 /* ART SCENES & REAL IMAGE DISPLAY */
-
 .art-scene {
   width:100%;
   height:220px;
@@ -364,7 +419,6 @@ p {
 .message-box b { color:#45354f; }
 
 /* CAKE AND CANDLE */
-
 .cake-scene {
   min-height:220px;
   display:flex;
@@ -529,8 +583,6 @@ p {
 
 .wish.show { display:block; }
 
-/* ACTUAL IMAGE SCENE */
-
 .bouquet-scene {
   position:relative;
   height:220px;
@@ -678,232 +730,251 @@ p {
   <span class="sparkle s4">✧</span>
 </div>
 
+<!-- Teasing Popup Banner -->
+<div class="lock-popup" id="lockPopup">
+  ⏳ Nice try, birthday girl! 🤭 Locked until 12:00 AM on Oct 19! ✨
+</div>
+
 <main class="shell">
-<div class="topline">A little birthday surprise</div>
+  <div class="topline">A little birthday surprise</div>
 
-<div class="progress" aria-label="Birthday surprise progress">
-  <span class="active"></span><span></span><span></span><span></span><span></span>
-</div>
-
-<!-- PAGE 1 -->
-<section class="card" id="page1">
-<div class="card-content">
-  <div class="emoji-badge">✨🎂</div>
-  <div class="eyebrow">A celebration just for you</div>
-
-  <h1>Happy Birthday,<br><span class="pink">Sri!</span> 💗</h1>
-
-  <p>
-    Hey <span class="highlight">Rashmi</span>! I'm so glad our paths crossed. 
-    From the moment we first met, we just clicked, and talking every day turned into such a great, natural connection between us. 
-    Whether it's hanging out in the cafeteria or just sharing random laughs, you make every day so much better. 
-    I'm genuinely glad we became such good friends.
-    <br><br>
-    So, before we start your surprises... are you ready to admit that
-    I'm officially your favourite best friend? 😉
-  </p>
-
-  <div class="divider">your answer, please 💌</div>
-
-  <div class="btn-group" id="buttonArea">
-    <button class="btn primary" onclick="goToPage('page2')">
-      Yes, absolutely! 🌟
-    </button>
-    <button class="btn secondary" id="noBtn" onclick="moveNoButton()">
-      No way 🙄
-    </button>
-  </div>
-</div>
-</section>
-
-<!-- PAGE 2: RED ROSE BOUQUET (Walled until unwrapped) -->
-<section class="card is-hidden" id="page2">
-<div class="card-content">
-  <div class="emoji-badge" id="bouquetBadge">🎁🌹</div>
-  <div class="eyebrow">A bouquet just for you</div>
-  <h1>A Little Love,<br><span class="pink">Wrapped in Roses!</span></h1>
-
-  <div id="bouquetContainer">
-    <div class="gift-box" role="button" tabindex="0"
-      aria-label="Open the flower bouquet gift"
-      onclick="unwrapBouquet()"
-      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();unwrapBouquet();}">
-      <div class="gift-ribbon">🎀</div>
-      <div class="box-text">Tap to unwrap your bouquet! 🌹</div>
-      <div class="box-sub">A gorgeous surprise awaits...</div>
-    </div>
+  <div class="progress" aria-label="Birthday surprise progress">
+    <span class="active"></span><span></span><span></span><span></span><span></span>
   </div>
 
-  <div id="bouquetContentArea" class="is-hidden">
+  <!-- PAGE 1 -->
+  <section class="card" id="page1">
+  <div class="card-content">
+    <div class="emoji-badge">✨🎂</div>
+    <div class="eyebrow">A celebration just for you</div>
+
+    <h1>Happy Birthday,<br><span class="pink">Sri!</span> 💗</h1>
+
     <p>
-      Every rose in this bouquet is a little reminder that you deserve
-      beautiful things, wonderful memories, and lots of reasons to smile.
+      Hey <span class="highlight">Rashmi</span>! I'm so glad our paths crossed. 
+      From the moment we first met, we just clicked, and talking every day turned into such a great, natural connection between us. 
+      Whether it's hanging out in the cafeteria or just sharing random laughs, you make every day so much better. 
+      I'm genuinely glad we became such good friends.
+      <br><br>
+      So, before we start your surprises... are you ready to admit that
+      I'm officially your favourite best friend? 😉
     </p>
 
-    <!-- Actual Approved Photorealistic Rose Bouquet Image -->
-    <div class="bouquet-scene">
-      <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?q=80&w=800&auto=format&fit=crop" alt="Stunning Red Rose Bouquet" />
+    <div class="divider">your answer, please 💌</div>
+
+    <div class="btn-group" id="buttonArea">
+      <button class="btn primary" onclick="goToPage('page2')">
+        Yes, absolutely! 🌟
+      </button>
+      <button class="btn secondary" id="noBtn" onclick="moveNoButton()">
+        No way 🙄
+      </button>
+    </div>
+  </div>
+  </section>
+
+  <!-- PAGE 2: RED ROSE BOUQUET -->
+  <section class="card is-hidden" id="page2">
+  <div class="card-content">
+    <div class="emoji-badge" id="bouquetBadge">🎁🌹</div>
+    <div class="eyebrow">A bouquet just for you</div>
+    <h1>A Little Love,<br><span class="pink">Wrapped in Roses!</span></h1>
+
+    <div id="bouquetContainer">
+      <div class="gift-box" role="button" tabindex="0"
+        aria-label="Open the flower bouquet gift"
+        onclick="unwrapBouquet()"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();unwrapBouquet();}">
+        <div class="gift-ribbon">🎀</div>
+        <div class="box-text">Tap to unwrap your bouquet! 🌹</div>
+        <div class="box-sub">A gorgeous surprise awaits...</div>
+      </div>
     </div>
 
-    <div class="photo-caption">A bunch of roses, a whole lot of happiness 🌹</div>
-
-    <div class="bouquet-message">
+    <div id="bouquetContentArea" class="is-hidden">
       <p>
-        🌹 <b>A little bouquet for a wonderful friend:</b><br><br>
-        If I could send you something today, it would be a beautiful bouquet
-        of red roses — just to add a little extra colour and happiness to
-        your special day.
-        <br><br>
-        May your life be filled with lovely surprises, genuine smiles,
-        unforgettable memories, and people who make you feel appreciated.
-        Keep shining, keep laughing, and keep being your amazing self.
-        You deserve all the happiness in the world! ❤️✨
+        Every rose in this bouquet is a little reminder that you deserve
+        beautiful things, wonderful memories, and lots of reasons to smile.
+      </p>
+
+      <div class="bouquet-scene">
+        <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?q=80&w=800&auto=format&fit=crop" alt="Stunning Red Rose Bouquet" />
+      </div>
+
+      <div class="photo-caption">A bunch of roses, a whole lot of happiness 🌹</div>
+
+      <div class="bouquet-message">
+        <p>
+          🌹 <b>A little bouquet for a wonderful friend:</b><br><br>
+          If I could send you something today, it would be a beautiful bouquet
+          of red roses — just to add a little extra colour and happiness to
+          your special day.
+          <br><br>
+          May your life be filled with lovely surprises, genuine smiles,
+          unforgettable memories, and people who make you feel appreciated.
+          Keep shining, keep laughing, and keep being your amazing self.
+          You deserve all the happiness in the world! ❤️✨
+        </p>
+      </div>
+    </div>
+
+    <button class="btn soft-next wide is-hidden" id="bouquetNextBtn" style="margin-top:10px" onclick="goToPage('page3')">
+      And now, something sweet 🍫 →
+    </button>
+  </div>
+  </section>
+
+  <!-- PAGE 3: CHOCOLATES -->
+  <section class="card is-hidden" id="page3">
+  <div class="card-content">
+    <div class="emoji-badge" id="chocoBadge">🎁🍫</div>
+    <div class="eyebrow">A little box of happiness</div>
+    <h1>Something Sweet!</h1>
+
+    <div id="chocoContainer">
+      <div class="gift-box" role="button" tabindex="0"
+        aria-label="Open the chocolate gift"
+        onclick="unwrapChocolate()"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();unwrapChocolate();}">
+        <div class="gift-ribbon">🎀</div>
+        <div class="box-text">Tap to unwrap your surprise! 💝</div>
+        <div class="box-sub">A little box of sweetness awaits...</div>
+      </div>
+    </div>
+
+    <div id="chocoContentArea" class="is-hidden">
+      <div class="art-scene">
+        <img src="https://images.unsplash.com/photo-1549007994-cb92caebd54b?q=80&w=800&auto=format&fit=crop" alt="Luxury Artisanal Chocolate Box" />
+      </div>
+      <div class="photo-caption">A sweet treat, just for you 🍫</div>
+
+      <div class="message-box">
+        <p><b>Surprise! Your luxury chocolates are here! 🍫✨</b></p>
+        <p>
+          They say chocolate is cheaper than therapy, but honestly, having you around as a friend covers both! 
+          Sending you the sweetest virtual box of treats for your birthday. 
+          May your day be as rich, sweet, and wonderful as you are! 💖
+        </p>
+      </div>
+
+      <p>
+        Because every birthday deserves a little extra sweetness.
+        Here's your virtual box of artisanal truffles and pralines to kick off your special day
+        in the happiest way possible! 🍫🎉
       </p>
     </div>
+
+    <button class="btn soft-next wide is-hidden" id="chocoNextBtn" style="margin-top:10px" onclick="goToPage('page4')">
+      And now, it's time for cake 🎂 →
+    </button>
   </div>
+  </section>
 
-  <button class="btn soft-next wide is-hidden" id="bouquetNextBtn" style="margin-top:10px" onclick="goToPage('page3')">
-    And now, something sweet 🍫 →
-  </button>
-</div>
-</section>
+  <!-- PAGE 4: CAKE AND CANDLE -->
+  <section class="card is-hidden" id="page4">
+  <div class="card-content">
+    <div class="emoji-badge" id="cakeBadge">🎂✨</div>
+    <div class="eyebrow">Close your eyes and wish</div>
+    <h1 id="cakeHeading">Make a Wish!</h1>
 
-<!-- PAGE 3: CHOCOLATES (Walled until unwrapped, with upgraded visuals & quotes) -->
-<section class="card is-hidden" id="page3">
-<div class="card-content">
-  <div class="emoji-badge" id="chocoBadge">🎁🍫</div>
-  <div class="eyebrow">A little box of happiness</div>
-  <h1>Something Sweet!</h1>
-
-  <div id="chocoContainer">
-    <div class="gift-box" role="button" tabindex="0"
-      aria-label="Open the chocolate gift"
-      onclick="unwrapChocolate()"
-      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();unwrapChocolate();}">
-      <div class="gift-ribbon">🎀</div>
-      <div class="box-text">Tap to unwrap your surprise! 💝</div>
-      <div class="box-sub">A little box of sweetness awaits...</div>
+    <div class="cake-scene">
+      <div class="cake">
+        <div class="candle">
+          <div class="flame" id="flame"></div>
+          <div class="smoke" id="smoke"></div>
+        </div>
+        <div class="cake-top"></div>
+        <div class="cake-body"></div>
+        <div class="icing"></div>
+        <div class="sprinkles">• · • · • · •</div>
+      </div>
     </div>
+
+    <div class="photo-caption" id="candleCaption">
+      Make a wish before the candle goes out 🕯️
+    </div>
+
+    <p id="cakeText">
+      Your birthday candle is glowing just for you! 🕯️
+      Close your eyes, think of something wonderful, and make a wish.
+      When you're ready, click the button to blow out your candle! 💗
+    </p>
+
+    <div id="wishMessage" class="wish" role="status">
+      ✨ Wish made! May something wonderful find its way to you this year.
+      Keep smiling and let your dreams shine! 💗
+    </div>
+
+    <button class="btn primary wide" id="wishBtn" onclick="makeWish()">
+      Make a Wish & Blow! 🌬️
+    </button>
+
+    <button class="btn soft-next wide is-hidden" id="cakeNextBtn" style="margin-top:10px"
+      onclick="goToPage('page5')">
+      One Last Birthday Message 💌 →
+    </button>
   </div>
+  </section>
 
-  <div id="chocoContentArea" class="is-hidden">
-    <!-- Upgraded High-Resolution Artisanal Chocolate Box Image -->
-    <div class="art-scene">
-      <img src="https://images.unsplash.com/photo-1549007994-cb92caebd54b?q=80&w=800&auto=format&fit=crop" alt="Luxury Artisanal Chocolate Box" />
-    </div>
-    <div class="photo-caption">A sweet treat, just for you 🍫</div>
+  <!-- PAGE 5: FINAL MESSAGE -->
+  <section class="card is-hidden" id="page5">
+  <div class="card-content">
+    <div class="emoji-badge">🥳💗</div>
+    <div class="eyebrow">A little note from me to you</div>
+
+    <h1>Happy Birthday,<br><span class="pink">Sri!</span> 🌷</h1>
 
     <div class="message-box">
-      <p><b>Surprise! Your luxury chocolates are here! 🍫✨</b></p>
       <p>
-        They say chocolate is cheaper than therapy, but honestly, having you around as a friend covers both! 
-        Sending you the sweetest virtual box of treats for your birthday. 
-        May your day be as rich, sweet, and wonderful as you are! 💖
+        🎯 <b>Thanks for being an amazing friend:</b>
+        Honestly, surviving this daily office chaos would be so much harder without you around. 
+        From our coffee/tea breaks to all those random, silly chats that save us from boring meetings, 
+        you make ordinary workdays actually fun. I'm really, really glad we became friends.
+      </p>
+      <p>
+        🎈 <b>Your birthday rule:</b>
+        Today is all about kicking back and completely forgetting about office stress. 
+        Eat all your favorite food without thinking twice, laugh till your stomach hurts, 
+        and just enjoy the day. You’ve totally earned every bit of it!
       </p>
     </div>
 
-    <p>
-      Because every birthday deserves a little extra sweetness.
-      Here's your virtual box of artisanal truffles and pralines to kick off your special day
-      in the happiest way possible! 🍫🎉
-    </p>
-  </div>
-
-  <button class="btn soft-next wide is-hidden" id="chocoNextBtn" style="margin-top:10px" onclick="goToPage('page4')">
-    And now, it's time for cake 🎂 →
-  </button>
-</div>
-</section>
-
-<!-- PAGE 4: CAKE AND CANDLE (Walled until candle is blown) -->
-<section class="card is-hidden" id="page4">
-<div class="card-content">
-  <div class="emoji-badge" id="cakeBadge">🎂✨</div>
-  <div class="eyebrow">Close your eyes and wish</div>
-  <h1 id="cakeHeading">Make a Wish!</h1>
-
-  <div class="cake-scene">
-    <div class="cake">
-      <div class="candle">
-        <div class="flame" id="flame"></div>
-        <div class="smoke" id="smoke"></div>
-      </div>
-      <div class="cake-top"></div>
-      <div class="cake-body"></div>
-      <div class="icing"></div>
-      <div class="sprinkles">• · • · • · •</div>
+    <div class="message-box blue">
+      <p>
+        ✨ <b>A little note:</b>
+        I hope this year brings you lots of happiness, exciting new
+        memories, and countless reasons to smile. Keep being the wonderful
+        person you are, and may all the good things you wish for find
+        their way to you. Have the happiest birthday! 💛
+      </p>
     </div>
+
+    <p class="signoff">Wishing you a beautiful year ahead! 🚀💗</p>
+
+    <div class="divider">you deserve all the happiness ✨</div>
   </div>
-
-  <div class="photo-caption" id="candleCaption">
-    Make a wish before the candle goes out 🕯️
-  </div>
-
-  <p id="cakeText">
-    Your birthday candle is glowing just for you! 🕯️
-    Close your eyes, think of something wonderful, and make a wish.
-    When you're ready, click the button to blow out your candle! 💗
-  </p>
-
-  <div id="wishMessage" class="wish" role="status">
-    ✨ Wish made! May something wonderful find its way to you this year.
-    Keep smiling and let your dreams shine! 💗
-  </div>
-
-  <button class="btn primary wide" id="wishBtn" onclick="makeWish()">
-    Make a Wish & Blow! 🌬️
-  </button>
-
-  <button class="btn soft-next wide is-hidden" id="cakeNextBtn" style="margin-top:10px"
-    onclick="goToPage('page5')">
-    One Last Birthday Message 💌 →
-  </button>
-</div>
-</section>
-
-<!-- PAGE 5: FINAL MESSAGE (Human-written update) -->
-<section class="card is-hidden" id="page5">
-<div class="card-content">
-  <div class="emoji-badge">🥳💗</div>
-  <div class="eyebrow">A little note from me to you</div>
-
-  <h1>Happy Birthday,<br><span class="pink">Sri!</span> 🌷</h1>
-
-  <div class="message-box">
-    <p>
-      🎯 <b>Thanks for being an amazing friend:</b>
-      Honestly, surviving this daily office chaos would be so much harder without you around. 
-      From our coffee/tea breaks to all those random, silly chats that save us from boring meetings, 
-      you make ordinary workdays actually fun. I'm really, really glad we became friends.
-    </p>
-    <p>
-      🎈 <b>Your birthday rule:</b>
-      Today is all about kicking back and completely forgetting about office stress. 
-      Eat all your favorite food without thinking twice, laugh till your stomach hurts, 
-      and just enjoy the day. You’ve totally earned every bit of it!
-    </p>
-  </div>
-
-  <div class="message-box blue">
-    <p>
-      ✨ <b>A little note:</b>
-      I hope this year brings you lots of happiness, exciting new
-      memories, and countless reasons to smile. Keep being the wonderful
-      person you are, and may all the good things you wish for find
-      their way to you. Have the happiest birthday! 💛
-    </p>
-  </div>
-
-  <p class="signoff">Wishing you a beautiful year ahead! 🚀💗</p>
-
-  <div class="divider">you deserve all the happiness ✨</div>
-</div>
-</section>
+  </section>
 
 <div class="footer">MADE WITH A LITTLE EXTRA LOVE · ✨</div>
 </main>
 
 <script>
+// Target Birthday: October 19, 2026 at 00:00:00 (Midnight)
+const targetDate = new Date("October 19, 2026 00:00:00").getTime();
+
+function isLocked() {
+  return new Date().getTime() < targetDate;
+}
+
+function showLockPopup() {
+  const popup = document.getElementById("lockPopup");
+  popup.classList.add("show");
+  setTimeout(() => {
+    popup.classList.remove("show");
+  }, 3500);
+}
+
+// --- App Navigation Script ---
 const pages = ["page1","page2","page3","page4","page5"];
 const dots = [...document.querySelectorAll(".progress span")];
 
@@ -913,12 +984,17 @@ let wishMade = false;
 let noMoves = 0;
 
 function goToPage(pageId) {
+  if (isLocked() && pageId !== "page1") {
+    showLockPopup();
+    return;
+  }
+
   pages.forEach((id,index) => {
     const page = document.getElementById(id);
     const visible = id === pageId;
 
     page.classList.toggle("is-hidden",!visible);
-    dots[index].classList.toggle("active",visible);
+    if(dots[index]) dots[index].classList.toggle("active",visible);
 
     if (visible) {
       page.style.animation = "none";
@@ -940,7 +1016,7 @@ function goToPage(pageId) {
     document.getElementById("chocoContainer")
       .classList.toggle("is-hidden",chocolateOpened);
     document.getElementById("chocoContentArea")
-      .classList.toggle("is-hidden",!chocolateOpened);
+      .classList.toggle("sub-hidden",!chocolateOpened);
     document.getElementById("chocoNextBtn")
       .classList.toggle("is-hidden",!chocolateOpened);
   }
@@ -956,6 +1032,10 @@ function goToPage(pageId) {
 }
 
 function unwrapBouquet() {
+  if (isLocked()) {
+    showLockPopup();
+    return;
+  }
   if (bouquetOpened) return;
   bouquetOpened = true;
 
@@ -968,6 +1048,10 @@ function unwrapBouquet() {
 }
 
 function unwrapChocolate() {
+  if (isLocked()) {
+    showLockPopup();
+    return;
+  }
   if (chocolateOpened) return;
   chocolateOpened = true;
 
@@ -1020,6 +1104,10 @@ function resetCandle() {
 }
 
 function makeWish() {
+  if (isLocked()) {
+    showLockPopup();
+    return;
+  }
   if (wishMade) return;
   wishMade = true;
 
