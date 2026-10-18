@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#fff1f6" />
+  <title>Happy Birthday Sri! 🌟</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --pink: #ff477e;
+      --pink-dark: #e92d68;
+      --peach: #ffb199;
+      --ink: #332b40;
+      --muted: #71697c;
+      --glass: rgba(255,255,255,.86);
+      --line: rgba(255,255,255,.9);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { min-height: 100%; }
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 22px 14px;
+      overflow-x: hidden;
+      color: var(--ink);
+      font-family: "DM Sans", sans-serif;
+      text-align: center;
+      background:
+        radial-gradient(circle at 12% 15%, rgba(255,255,255,.95) 0 2px, transparent 3px),
+        radial-gradient(circle at 85% 22%, rgba(255,255,255,.8) 0 3px, transparent 4px),
+        linear-gradient(135deg, #ffe1ee 0%, #e7e8ff 52%, #d7f2ff 100%);
+      background-attachment: fixed;
+    }
+    button { font: inherit; -webkit-tap-highlight-color: transparent; }
+    .ambient { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+    .orb {
+      position: absolute; width: 230px; height: 230px; border-radius: 50%;
+      filter: blur(2px); opacity: .38; animation: drift 12s ease-in-out infinite alternate;
+    }
+    .orb.one { background: #ffb8d2; left: -90px; top: 8%; }
+    .orb.two { background: #a8c5ff; right: -100px; bottom: 8%; animation-delay: -5s; }
+    .sparkle {
+      position: absolute; color: rgba(255,255,255,.95); font-size: 22px;
+      animation: twinkle 3s ease-in-out infinite;
+    }
+    .sparkle.s1 { top: 13%; left: 13%; }
+    .sparkle.s2 { top: 20%; right: 14%; animation-delay: 1s; }
+    .sparkle.s3 { bottom: 15%; left: 17%; animation-delay: 1.6s; }
+    .sparkle.s4 { bottom: 22%; right: 12%; animation-delay: .5s; }
+    .shell { width: min(100%, 490px); position: relative; z-index: 1; }
+    .topline {
+      display: flex; justify-content: center; align-items: center; gap: 8px;
+      color: #795f8c; font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+      font-weight: 700; margin-bottom: 13px;
+    }
+    .topline::before, .topline::after {
+      content: ""; width: 24px; height: 1px; background: rgba(121,95,140,.4);
+    }
+    .progress { display: flex; justify-content: center; gap: 7px; margin: 0 0 14px; }
+    .progress span { width: 22px; height: 5px; border-radius: 20px; background: rgba(255,255,255,.65); transition: .35s ease; }
+    .progress span.active { width: 37px; background: var(--pink); }
+    .card {
+      position: relative; overflow: hidden; width: 100%;
+      padding: 31px 27px 27px; border-radius: 30px;
+      background: var(--glass); border: 1px solid var(--line);
+      box-shadow: 0 24px 70px rgba(100, 77, 132, .16), inset 0 1px 0 white;
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      animation: cardIn .55s cubic-bezier(.2,.8,.2,1) both;
+    }
+    .card::before {
+      content: ""; position: absolute; width: 190px; height: 190px; border-radius: 50%;
+      background: rgba(255, 184, 210, .16); top: -120px; right: -80px; pointer-events: none;
+    }
+    .card.hidden { display: none; }
+    .card-content { position: relative; z-index: 1; }
+    .emoji-badge {
+      width: 78px; height: 78px; margin: 0 auto 17px; display: grid; place-items: center;
+      border-radius: 25px; font-size: 38px;
+      background: linear-gradient(145deg, #fff 0%, #ffe7f0 100%);
+      box-shadow: 0 9px 25px rgba(255,71,126,.13), inset 0 0 0 1px rgba(255,255,255,.9);
+      animation: bob 2.8s ease-in-out infinite;
+    }
+    .eyebrow { color: var(--pink-dark); font-size: 11px; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; margin-bottom: 8px; }
+    h1 {
+      font-family: "Playfair Display", Georgia, serif; font-size: clamp(27px, 6vw, 35px);
+      line-height: 1.15; letter-spacing: -.035em; margin-bottom: 15px; color: #382b48;
+    }
+    h1 .pink { color: var(--pink-dark); }
+    p { color: var(--muted); font-size: 14.5px; line-height: 1.8; margin-bottom: 19px; }
+    .highlight { color: var(--pink-dark); font-weight: 700; }
+    .divider { display: flex; align-items: center; gap: 10px; margin: 18px 0; color: #d88ca7; font-size: 12px; }
+    .divider::before, .divider::after { content: ""; height: 1px; flex: 1; background: #f3dce6; }
+    .btn-group { position: relative; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; margin-top: 10px; }
+    .btn {
+      border: 0; border-radius: 999px; padding: 14px 20px; font-size: 13px;
+      font-weight: 700; cursor: pointer; transition: transform .18s, box-shadow .18s, background .18s;
+      touch-action: manipulation;
+    }
+    .btn:focus-visible { outline: 3px solid #8d7aff; outline-offset: 3px; }
+    .btn:hover { transform: translateY(-2px); }
+    .primary {
+      color: white; background: linear-gradient(135deg, #ff477e, #ff7799);
+      box-shadow: 0 9px 22px rgba(255,71,126,.28);
+    }
+    .primary:hover { box-shadow: 0 12px 26px rgba(255,71,126,.38); }
+    .primary:active { transform: scale(.98); }
+    .secondary { color: #6e6677; background: #f4f1f7; border: 1px solid #e9e3ef; }
+    .wide { width: 100%; }
+    .soft-next { background: rgba(255,255,255,.8); color: #d9346b; border: 1px solid #f4cbd9; box-shadow: 0 5px 15px rgba(100,77,132,.07); padding: 12px 18px; font-size: 13px; }
+    #noBtn { position: relative; z-index: 2; white-space: nowrap; }
+    .real-img {
+      width: 100%; height: 210px; object-fit: cover; display: block;
+      border-radius: 21px; margin: 0 auto 19px; border: 4px solid white;
+      box-shadow: 0 12px 28px rgba(74,52,85,.14);
+    }
+    .photo-caption { font-size: 10px; color: #a39aaa; letter-spacing: .14em; text-transform: uppercase; margin-top: -8px; margin-bottom: 17px; }
+    .message-box {
+      background: #fff5f8; border: 1px solid #ffe0e9; border-radius: 18px;
+      padding: 16px; text-align: left; margin-bottom: 12px;
+    }
+    .message-box.blue { background: #f3f5ff; border-color: #e1e6ff; }
+    .message-box p { font-size: 13.2px; line-height: 1.75; color: #5b5264; margin: 0 0 10px; }
+    .message-box p:last-child { margin-bottom: 0; }
+    .message-box b { color: #41364e; }
+    .signoff { font-size: 12px; margin: 15px 0 0; color: #82778c; }
+    .tiny-heart { display: inline-block; color: var(--pink); animation: heartbeat 1.2s infinite; }
+    .footer { font-size: 10px; color: #8d80a0; margin-top: 14px; letter-spacing: .08em; }
+    .confetti {
+      position: fixed; top: -12px; z-index: 20; pointer-events: none;
+      width: 8px; height: 12px; animation: confettiFall var(--duration, 3s) linear forwards;
+      border-radius: 2px;
+    }
+    @keyframes cardIn { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes bob { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-6px) rotate(2deg); } }
+    @keyframes twinkle { 0%,100% { opacity: .45; transform: scale(.8) rotate(0); } 50% { opacity: 1; transform: scale(1.2) rotate(15deg); } }
+    @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(25px,-25px) scale(1.12); } }
+    @keyframes heartbeat { 0%,100% { transform: scale(1); } 50% { transform: scale(1.25); } }
+    @keyframes confettiFall { to { transform: translate3d(var(--drift, 40px), 110vh, 0) rotate(780deg); opacity: .1; } }
+    @media (max-width: 420px) {
+      body { padding: 16px 11px; }
+      .card { padding: 27px 19px 22px; border-radius: 25px; }
+      .emoji-badge { width: 68px; height: 68px; border-radius: 22px; font-size: 34px; }
+      p { font-size: 14px; }
+      .real-img { height: 185px; }
+      .btn { padding: 13px 16px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient" aria-hidden="true">
+    <div class="orb one"></div><div class="orb two"></div>
+    <span class="sparkle s1">✦</span><span class="sparkle s2">✧</span>
+    <span class="sparkle s3">✦</span><span class="sparkle s4">✧</span>
+  </div>
+
+  <main class="shell">
+    <div class="topline">A little birthday surprise</div>
+    <div class="progress" aria-label="Birthday surprise progress">
+      <span class="active"></span><span></span><span></span><span></span>
+    </div>
+
+    <section class="card" id="page1" aria-labelledby="title1">
+      <div class="card-content">
+        <div class="emoji-badge">✨🎂</div>
+        <div class="eyebrow">Made with a little extra love</div>
+        <h1 id="title1">Happy Birthday, <span class="pink">Sri!</span></h1>
+        <p>
+          Hey <span class="highlight">Reshmi</span>! I’m really glad we became friends. You’ve made the everyday office routine so much more fun, and I always enjoy our tea breaks and little chats. It’s rare to meet someone you can talk to so easily and just be yourself around—and I’m happy I got to know you.
+          <br><br>
+          So before we start your surprises... are you ready to admit that I'm officially your favorite best friend? 😉
+        </p>
+        <div class="divider">your answer, please 💌</div>
+        <div class="btn-group" id="buttonArea">
+          <button class="btn primary" id="yesBtn" onclick="goToPage('page2')">Yes, absolutely! 💛</button>
+          <button class="btn secondary" id="noBtn" onmouseenter="moveNoButton()" ontouchstart="moveNoButton(event)" onclick="moveNoButton()">No way 🙄</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card hidden" id="page2" aria-labelledby="title2">
+      <div class="card-content">
+        <div class="emoji-badge">🍫😋</div>
+        <div class="eyebrow">Something sweet</div>
+        <h1 id="title2">The Sweet Treat!</h1>
+        <img src="https://images.unsplash.com/photo-1548907040-4d42cfc1a8bc?auto=format&fit=crop&w=1000&q=85" alt="An assortment of gourmet chocolates" class="real-img" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 500%22%3E%3Crect width=%22900%22 height=%22500%22 fill=%22%237b4055%22/%3E%3Ctext x=%22450%22 y=%22245%22 text-anchor=%22middle%22 font-size=%22120%22%3E🍫%3C/text%3E%3Ctext x=%22450%22 y=%22350%22 text-anchor=%22middle%22 font-size=%2230%22 fill=%22white%22%3EA little box of sweetness%3C/text%3E%3C/svg%3E';">
+        <div class="photo-caption">A little sweetness for your special day</div>
+        <p>
+          First things first! No birthday is complete without rich, premium chocolates. Sending you a virtual box of the finest truffles to kick off your special day in the sweetest way possible! ✨🍫
+        </p>
+        <button class="btn soft-next wide" onclick="goToPage('page3')">And now, cake <span aria-hidden="true">♡</span></button>
+      </div>
+    </section>
+
+    <section class="card hidden" id="page3" aria-labelledby="title3">
+      <div class="card-content">
+        <div class="emoji-badge">🎂🎉</div>
+        <div class="eyebrow">Make a wish</div>
+        <h1 id="title3">Time for Cake!</h1>
+        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1000&q=85" alt="A beautiful birthday cake" class="real-img" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 500%22%3E%3Crect width=%22900%22 height=%22500%22 fill=%22%23f8c4d8%22/%3E%3Ctext x=%22450%22 y=%22245%22 text-anchor=%22middle%22 font-size=%22120%22%3E🎂%3C/text%3E%3Ctext x=%22450%22 y=%22350%22 text-anchor=%22middle%22 font-size=%2230%22 fill=%22%238d3159%22%3EMake a wish!%3C/text%3E%3C/svg%3E';">
+        <div class="photo-caption">One wish. A thousand happy moments.</div>
+        <p>
+          Time to make a wish and cut the cake! 🎈 Wishing you a day filled with sweet moments, endless laughter, and all the happiness in the world. May this year bring you closer to all your big dreams! ✨
+        </p>
+        <button class="btn soft-next wide" onclick="goToPage('page4')">One last little note <span aria-hidden="true">♡</span></button>
+      </div>
+    </section>
+
+    <section class="card hidden" id="page4" aria-labelledby="title4">
+      <div class="card-content">
+        <div class="emoji-badge">🥳🥂</div>
+        <div class="eyebrow">A little note from me to you</div>
+        <h1 id="title4">Happy Birthday, <span class="pink">Sri!</span></h1>
+        <div class="message-box">
+          <p>💛 <b>Thanks for being such a real one:</b> Honestly, having you around made dealing with all the daily office chaos so much easier. Whenever things got annoying or loud, just talking to you brought total peace of mind.</p>
+          <p>🎈 <b>How your day should look:</b> Today is completely about you. Forget all the stress, eat whatever you want without thinking twice, and have an amazing day!</p>
+        </div>
+        <div class="message-box blue">
+          <p>✨ <b>A little note:</b> I hope this year brings you lots of happiness, exciting new memories, and countless reasons to smile. Keep being the wonderful person you are, and may all the good things you wish for find their way to you. Have the happiest birthday! 💛</p>
+        </div>
+        <p class="signoff">Wishing you a fantastic year ahead! 🌟</p>
+        <div class="divider">sending good vibes <span class="tiny-heart">♥</span></div>
+      </div>
+    </section>
+    <div class="footer">A SMALL SURPRISE · A BIG SMILE ✨</div>
+  </main>
+
+  <script>
+    const pages = ["page1", "page2", "page3", "page4"];
+    const progressDots = [...document.querySelectorAll(".progress span")];
+    const noBtn = document.getElementById("noBtn");
+    const buttonArea = document.getElementById("buttonArea");
+    let noMoves = 0;
+
+    function goToPage(pageId) {
+      pages.forEach((id, index) => {
+        const page = document.getElementById(id);
+        page.classList.toggle("hidden", id !== pageId);
+        if (id === pageId) {
+          page.style.animation = "none";
+          void page.offsetWidth;
+          page.style.animation = "";
+          page.scrollTop = 0;
+          progressDots[index].classList.add("active");
+        } else {
+          progressDots[index].classList.remove("active");
+        }
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (pageId === "page2" || pageId === "page4") launchConfetti(pageId === "page4" ? 90 : 35);
+    }
+
+    function moveNoButton(event) {
+      if (event && event.type === "touchstart") event.preventDefault();
+      const area = buttonArea.getBoundingClientRect();
+      const button = noBtn.getBoundingClientRect();
+      const maxX = Math.max(0, area.width - button.width);
+      const maxY = 65;
+      const x = Math.random() * maxX - maxX / 2;
+      const y = (Math.random() * maxY) - maxY / 2;
+      noBtn.style.position = "relative";
+      noBtn.style.left = `${x}px`;
+      noBtn.style.top = `${y}px`;
+      noMoves++;
+      if (noMoves % 3 === 0) noBtn.textContent = "Try again 😜";
+    }
+
+    function launchConfetti(count = 50) {
+      const colors = ["#ff477e", "#ffc857", "#9b8cff", "#7ed6df", "#ff9f7f", "#ffffff"];
+      for (let i = 0; i < count; i++) {
+        const piece = document.createElement("span");
+        piece.className = "confetti";
+        piece.style.left = `${Math.random() * 100}vw`;
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.setProperty("--duration", `${2.2 + Math.random() * 2.5}s`);
+        piece.style.setProperty("--drift", `${Math.random() * 180 - 90}px`);
+        piece.style.animationDelay = `${Math.random() * .55}s`;
+        piece.style.opacity = `${.65 + Math.random() * .35}`;
+        document.body.appendChild(piece);
+        window.setTimeout(() => piece.remove(), 5500);
+      }
+    }
+  </script>
+</body>
+</html>
